@@ -14,7 +14,11 @@ Theoretically, this application can be called by any other application. Here we 
 See [Usage](#Usage) below for more details.
 
 ### Example Result:
-...
+Input: see test_input.json for more details
+
+Result:
+(steps: 6, size: 832x480, around 140 seconds on RTX 4090, 0.045$😱 on RunPod)
+
 
 #### Time Measurement Explanation:
 The time is measured from the moment the input prompt is sent to the moment the result image is received, including the time for all the following steps:
@@ -28,6 +32,8 @@ The time is measured from the moment the input prompt is sent to the moment the 
 - Python >= 3.10
 - Docker
 - Local GPU is necessary for testing but not necessary for deployment. (Recommended: RTX 4090, A100)
+
+Example Notebook: [link](./scripts/WanVideo_Serverless_Runpod.ipynb)
 
 <a id="Usage"></a>
 ## 3. Usage
@@ -69,12 +75,9 @@ Feel free to contact the author of this repo if you encounter any problems after
 python test_client.py
 ```
 
-##### Showcase: Call from a Telegram bot
-![Example Result](./assets/telegram_bot_example.jpg)
-
 ## 4. TODO
 - [x] Support for simple Text-to-Video task
-- [ ] Create a Colab notebook example 
+- [x] Create a notebook example
 - [ ] Prevent errors when using RTX 5090
 - [ ] Support for reference image integration using VACE
 
