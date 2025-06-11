@@ -1,0 +1,4 @@
+Kijai/WanVideo_comfy/Wan21_CausVid_14B_T2V_lora_rank32.safetensors ./ComfyUI/models/loras/Wan21_CausVid_14B_T2V_lora_rank32.safetensors
+Kijai/WanVideo_comfy/Wan2_1-T2V-14B_fp8_e5m2.safetensors ./ComfyUI/models/diffusion_models/Wan2_1-T2V-14B_fp8_e5m2.safetensors
+Kijai/WanVideo_comfy/umt5-xxl-enc-bf16.safetensors ./ComfyUI/models/text_encoders/umt5-xxl-enc-bf16.safetensors
+Kijai/WanVideo_comfy/Wan2_1_VAE_bf16.safetensors ./ComfyUI/models/vae/Wan2_1_VAE_bf16.safetensors
