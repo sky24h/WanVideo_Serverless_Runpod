@@ -4,9 +4,9 @@ A serverless application that uses WAN 2.1 to run a Text-to-Video task on RunPod
 ## 1. Introduction
 This is a serverless application that uses [Wan2.1](https://github.com/Wan-Video/Wan2.1) to run a **Text-to-Video** task on [RunPod](https://www.runpod.io/).
 
-Specifically, this repo is mainly modified from [kijai's ComfyUI-WanVideoWrapper](https://github.com/kijai/ComfyUI-WanVideoWrapper), which cost much less VRAM and is much faster than the official repo.
+Specifically, this repo is mainly modified from [kijai's ComfyUI-WanVideoWrapper](https://github.com/kijai/ComfyUI-WanVideoWrapper), which costs much less VRAM and is much faster (thanks to CausVid Lora) than the official repo.
 
-Serverless means that you are only charged for the time you use the application, and you don't need to pay for the idle time, which is very suitable for this kind of application that is not used frequently but needs to respond quickly.
+Serverless means that you are only charged for the time you use the application, and you don't need to pay for idle time, which is very suitable for applications that are not used frequently but need to respond quickly.
 
 Theoretically, this application can be called by any other application. Here we provide one example:
 1. A simple Python script
@@ -17,8 +17,9 @@ See [Usage](#Usage) below for more details.
 Input: see test_input.json for more details
 
 Result:
-(steps: 6, size: 832x480, around 140 seconds on RTX 4090, 0.045$😱 on RunPod)
+(6 steps, 832x480 resolution, 97 frames, takes ~140 seconds on an RTX 4090, and costs about $0.045 on RunPod.)
 
+https://github.com/user-attachments/assets/cd847d26-70e4-4fad-94c0-cfb62f1b0c1f
 
 #### Time Measurement Explanation:
 The time is measured from the moment the input prompt is sent to the moment the result image is received, including the time for all the following steps:
@@ -31,7 +32,7 @@ The time is measured from the moment the input prompt is sent to the moment the 
 ## 2. Dependencies
 - Python >= 3.10
 - Docker
-- Local GPU is necessary for testing but not necessary for deployment. (Recommended: RTX 4090, A100)
+- A local GPU is necessary for testing, but not necessary for deployment. (Recommended: RTX 4090, A100)
 
 Example Notebook: [link](./scripts/WanVideo_Serverless_Runpod.ipynb)
 
@@ -55,7 +56,7 @@ python server.py
 #### 2. Deploy on RunPod
 1. First, make sure you have installed Docker and have accounts on both DockerHub and RunPod.
 
-2. Then, decide a name for your Docker image, e.g., "your_username/wan2_1:v1" and set your image name in "./scripts/build.sh".
+2. Then, decide a name for your Docker image, e.g., "your_username/wan2_1:v1", and set your image name in "./scripts/build.sh".
 
 3. Run the following commands to build and push your Docker image to DockerHub.
 
