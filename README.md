@@ -74,6 +74,8 @@ python test_client.py
 
 ## 4. TODO
 - [x] Support for simple Text-to-Video task
+- [ ] Create a Colab notebook example 
+- [ ] Prevent errors when using RTX 5090
 - [ ] Support for reference image integration using VACE
 
 ## 4. Acknowledgement
