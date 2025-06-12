@@ -4,6 +4,7 @@ import imageio
 import numpy as np
 import tempfile
 import sys
+
 sys.path.append("ComfyUI")
 
 from custom_nodes.WanVideoWrapper.nodes import (
@@ -20,12 +21,14 @@ from custom_nodes.WanVideoWrapper.nodes import (
 )
 
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
+FPS = 24
+VIDEO_LENGTH = 4 # seconds
 
 
 def save_video(frames: torch.Tensor, seed: int) -> str:
     output_video_path = tempfile.NamedTemporaryFile(prefix="{}_".format(seed), suffix=".mp4").name
     frames_np = (frames.cpu().numpy() * 255).astype(np.uint8)
-    writer = imageio.get_writer(output_video_path, fps=24, codec="libx264", quality=9, pixelformat="yuv420p", macro_block_size=1)
+    writer = imageio.get_writer(output_video_path, fps=FPS, codec="libx264", quality=9, pixelformat="yuv420p", macro_block_size=1)
     for image in frames_np:
         writer.append_data(image)
     writer.close()
@@ -82,7 +85,7 @@ def check_data_format(job_input: dict) -> dict:
 
 
 class WanVideo:
-    def __init__(self, lora_name=None, transformer_name=None, t5_model_name=None, vae_name=None):
+    def __init__(self, lora_name=None, transformer_name=None, t5_model_name=None, vae_name=None, strength=0.5):
         if lora_name is None:
             lora_name = "Wan21_CausVid_14B_T2V_lora_rank32.safetensors"
         if transformer_name is None:
@@ -99,7 +102,7 @@ class WanVideo:
             )[0]
 
             lora_select = WanVideoLoraSelect()
-            lora_select = lora_select.getlorapath(lora=lora_name, strength=0.5)[0]
+            lora_select = lora_select.getlorapath(lora=lora_name, strength=strength)[0]
 
             wanvideo = WanVideoModelLoader()
             self.wanvideo = wanvideo.loadmodel(
@@ -125,10 +128,22 @@ class WanVideo:
             self.sampler = WanVideoSampler()
             self.decoder = WanVideoDecode()
 
-    def inference(self, prompt, n_prompt=None, steps=6, num_frames=97, cfg=1.0, shift=2.0, width=832, height=480, seed=42):
-        if n_prompt is None:
-            # default n_prompt
-            n_prompt = "Bright tones, overexposed, static, blurred details, subtitles, style, works, paintings, images, static, overall gray, worst quality, low quality, JPEG compression residue, ugly, incomplete, extra fingers, poorly drawn hands, poorly drawn faces, deformed, disfigured, misshapen limbs, fused fingers, still picture, messy background, three legs, many people in the background, walking backwards."
+    def inference(self, prompt, n_prompt=None, steps=None, num_frames=None, width=None, height=None, cfg=None, shift=None, seed=None):
+        # default values for optional parameters
+        n_prompt = (
+            n_prompt
+            if n_prompt is not None
+            else "Bright tones, overexposed, static, blurred details, subtitles, static, cg, cartoon,overall gray, worst quality, low quality, JPEG compression residue, ugly, incomplete, extra fingers, poorly drawn hands, poorly drawn faces, deformed, disfigured, misshapen limbs, fused fingers, still picture, messy background, three legs, many people in the background, walking backwards."
+        )
+        steps = steps if steps is not None else 6
+        num_frames = num_frames if num_frames is not None else FPS * VIDEO_LENGTH + 1 # +1 for the first frame
+        width = width if width is not None else 832
+        height = height if height is not None else 480
+        cfg = cfg if cfg is not None else 1.0
+        shift = shift if shift is not None else 4.0
+        seed = seed if seed is not None else torch.randint(0, 1000000000, (1,)).item()
+        torch.manual_seed(seed)
+
         with torch.no_grad():
             samples = self.sampler.process(
                 model=self.wanvideo,
