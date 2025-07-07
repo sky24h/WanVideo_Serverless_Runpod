@@ -1,17 +1,20 @@
-import runpod
 import base64
 import json
 import time
 
-time_out = 60 * 10 # 10 minutes
+import runpod
 
-with open("test_input.json", "r") as f:
+time_out = 60 * 10  # 10 minutes
+
+with open("test_input.json") as f:
     test_input = json.load(f)["input"]
+
 
 def decode_data(data, save_path):
     fh = open(save_path, "wb")
     fh.write(base64.b64decode(data))
     fh.close()
+
 
 # Set your API key here
 runpod.api_key = ""
@@ -31,7 +34,7 @@ print("Got response!", result.status())
 time_waited = 0
 if run_request.status() == "IN_QUEUE" or result.status() == "IN_PROGRESS":
     while True:
-        print("Waiting for completion... ({}/{})".format(time_waited, time_out))
+        print(f"Waiting for completion... ({time_waited}/{time_out})")
         time.sleep(5)
         time_waited += 5
         if run_request.status() == "COMPLETED":

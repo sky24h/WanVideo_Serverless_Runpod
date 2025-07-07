@@ -1,32 +1,33 @@
 import os
-import torch
+import sys
+import tempfile
+
 import imageio
 import numpy as np
-import tempfile
-import sys
+import torch
 
 sys.path.append("ComfyUI")
 
 from custom_nodes.WanVideoWrapper.nodes import (
+    LoadWanVideoT5TextEncoder,
     WanVideoBlockSwap,
+    WanVideoDecode,
+    WanVideoEmptyEmbeds,
     WanVideoLoraSelect,
     WanVideoModelLoader,
-    LoadWanVideoT5TextEncoder,
-    WanVideoTextEncode,
-    WanVideoEmptyEmbeds,
-    WanVideoSLG,
     WanVideoSampler,
+    WanVideoSLG,
+    WanVideoTextEncode,
     WanVideoVAELoader,
-    WanVideoDecode,
 )
 
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 FPS = 24
-VIDEO_LENGTH = 4 # seconds
+VIDEO_LENGTH = 4  # seconds
 
 
 def save_video(frames: torch.Tensor, seed: int) -> str:
-    output_video_path = tempfile.NamedTemporaryFile(prefix="{}_".format(seed), suffix=".mp4").name
+    output_video_path = tempfile.NamedTemporaryFile(prefix=f"{seed}_", suffix=".mp4").name
     frames_np = (frames.cpu().numpy() * 255).astype(np.uint8)
     writer = imageio.get_writer(output_video_path, fps=FPS, codec="libx264", quality=9, pixelformat="yuv420p", macro_block_size=1)
     for image in frames_np:
@@ -136,7 +137,7 @@ class WanVideo:
             else "Bright tones, overexposed, static, blurred details, subtitles, static, cg, cartoon,overall gray, worst quality, low quality, JPEG compression residue, ugly, incomplete, extra fingers, poorly drawn hands, poorly drawn faces, deformed, disfigured, misshapen limbs, fused fingers, still picture, messy background, three legs, many people in the background, walking backwards."
         )
         steps = steps if steps is not None else 6
-        num_frames = num_frames if num_frames is not None else FPS * VIDEO_LENGTH + 1 # +1 for the first frame
+        num_frames = num_frames if num_frames is not None else FPS * VIDEO_LENGTH + 1  # +1 for the first frame
         width = width if width is not None else 832
         height = height if height is not None else 480
         cfg = cfg if cfg is not None else 1.0

@@ -1,7 +1,8 @@
 import os
+
 from huggingface_hub import hf_hub_download
 
-with open(os.path.join(os.path.dirname(__file__), "download_list.txt"), "r") as r:
+with open(os.path.join(os.path.dirname(__file__), "download_list.txt")) as r:
     download_list = r.read().splitlines()
 
 for download in download_list:
@@ -15,7 +16,7 @@ for download in download_list:
     local_dir = os.path.dirname(download_to)
     local_dir = os.path.dirname(local_dir) if subfolder is not None else local_dir
     local_dir = os.path.join(os.path.dirname(__file__), "..", local_dir)
-    print("Downloading from {}/{}/{} to {}".format(repo_id, subfolder, filename, local_dir))
+    print(f"Downloading from {repo_id}/{subfolder}/{filename} to {local_dir}")
     hf_hub_download(repo_id=repo_id, filename=filename, subfolder=subfolder, local_dir=local_dir, local_dir_use_symlinks=False)
     if filename == os.path.basename(save_path):
         # no need to move

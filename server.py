@@ -4,14 +4,15 @@ import os
 os.environ["CUDA_MODULE_LOADING"] = "LAZY"
 # set SAFETENSORS_FAST_GPU=1 to speed up the serverless function
 os.environ["SAFETENSORS_FAST_GPU"] = "1"
-import runpod
 import base64
 import signal
+
+import runpod
 
 from wan_inference_utils import WanVideo, check_data_format
 
 wanvideo = WanVideo()
-timeout_s = 60 * 10 # 10 minutes
+timeout_s = 60 * 10  # 10 minutes
 
 
 def encode_data(data_path):
@@ -33,20 +34,20 @@ def text2video(job):
         job_input = job["input"]
         job_input = check_data_format(job_input)
         save_path = wanvideo.inference(
-            prompt         = job_input["prompt"],
-            steps          = job_input["steps"],
-            num_frames     = job_input["num_frames"],
-            width          = job_input["width"],
-            height         = job_input["height"],
-            n_prompt       = job_input["n_prompt"],
-            cfg            = job_input["cfg"],
-            shift          = job_input["shift"],
-            seed           = job_input["seed"],
+            prompt=job_input["prompt"],
+            steps=job_input["steps"],
+            num_frames=job_input["num_frames"],
+            width=job_input["width"],
+            height=job_input["height"],
+            n_prompt=job_input["n_prompt"],
+            cfg=job_input["cfg"],
+            shift=job_input["shift"],
+            seed=job_input["seed"],
         )
         video_data = encode_data(save_path)
         return {"filename": os.path.basename(save_path), "data": video_data}
     except Exception as e:
-        return {"error": "Something went wrong, error message: {}".format(e)}
+        return {"error": f"Something went wrong, error message: {e}"}
     finally:
         signal.alarm(0)
 
