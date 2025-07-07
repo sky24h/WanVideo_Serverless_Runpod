@@ -1,0 +1,48 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+# exclude ComfyUI/ since it is a submodule and we don't want to run ruff on it
+exclude: ^ComfyUI/
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v5.0.0
+  hooks:
+  - id: check-added-large-files
+    args: ['--maxkb=102400'] # can upload <100 MB to github
+  - id: check-executables-have-shebangs
+  - id: check-json
+  - id: check-merge-conflict
+  - id: check-shebang-scripts-are-executable
+  - id: check-toml
+  - id: check-yaml
+  - id: debug-statements
+  - id: detect-private-key
+  - id: end-of-file-fixer
+  - id: mixed-line-ending
+    args: ['--fix=auto']  # replace 'auto' with 'lf' to enforce Linux/Mac line endings or 'crlf' for Windows
+  - id: name-tests-test
+    exclude: 'testing-pack/'
+  - id: pretty-format-json
+    args: ['--autofix']
+  - id: requirements-txt-fixer
+  - id: trailing-whitespace
+- repo: https://github.com/lovesegfault/beautysh
+  rev: v6.2.1
+  hooks:
+  - id: beautysh
+    description: "A Bash beautifier for the masses"
+- repo: local
+  hooks:
+    - id: ruff-check
+      name: ruff check
+      description: "Run python linting"
+      entry: uvx ruff check --fix --config=pyproject.toml
+      language: system
+      types_or: [python, jupyter]
+      stages: [pre-commit, manual]
+    - id: ruff-format
+      name: ruff format
+      description: "Run python formatting"
+      entry: uvx ruff format
+      language: system
+      types_or: [python, jupyter]
+      stages: [pre-commit, manual]
